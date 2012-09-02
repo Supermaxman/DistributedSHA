@@ -40,7 +40,7 @@ public class Inport extends Thread {
                 if (b == 0x01) {
                    String seedword = in.readUTF();
                    String hash = in.readUTF();
-                   if(!jedis.get(seedword).isEmpty()){
+                   if(jedis.get(seedword) != null){
                       //reject
                    }else {
                        //add to db

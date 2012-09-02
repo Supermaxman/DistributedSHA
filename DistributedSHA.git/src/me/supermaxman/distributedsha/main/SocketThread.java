@@ -5,7 +5,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
  * User: Benjamin
@@ -35,16 +34,14 @@ public class SocketThread extends Thread {
                 byte b = ios.readByte();
                 System.out.println("Received packet : " + b);
                 if (b == 0x02) {
-                    ArrayList<String> arrayList = (ArrayList<String>) ios.readObject();
-
+//                    ArrayList<String> arrayList = (ArrayList<String>) ios.readObject();
+//                    Main.hashingThread.addToQueue(arrayList);
                 }
 
             } catch (IOException e) {
                 System.out.println(e.getMessage());
                 //TODO: Setup reconnecting
                 return;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
 
             // Sleep
@@ -61,7 +58,6 @@ public class SocketThread extends Thread {
         dos.writeUTF(seed);
         dos.writeUTF(hash);
         dos.flush();
-
     }
 
 
