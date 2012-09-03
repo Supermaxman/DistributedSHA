@@ -1,12 +1,13 @@
 package me.tehrainbowguy.distributedsha.server;
 
-import redis.clients.jedis.Jedis;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
@@ -21,7 +22,7 @@ public class Serv extends Thread {
     private InetAddress hostAddress;
     private Socket socket;
     public ArrayList<User> users = new ArrayList<User>();
-    static Jedis jedis = new Jedis("localhost");
+    Connection con;
     /**
      * Creates a new room for clients to connect to.
      */
@@ -44,12 +45,33 @@ public class Serv extends Thread {
         }
         // Announce the socket creation
         System.out.println("Socket " + serverSocket + " created.");
+
+
+        System.out.println("Connecting to mysql");
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            con = DriverManager.getConnection(Main.url, Main.user, Main.password);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        try {
+            con.setAutoCommit(true);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Connected to mysql");
     }
 
     /**
      * Starts the client accepting process.
      */
     public void run() {
+
         // Announce the starting of the process
         System.out.println("Room has been started.");
         // Enter the main loop

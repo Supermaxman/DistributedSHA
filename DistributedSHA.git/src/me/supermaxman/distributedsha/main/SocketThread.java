@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: Benjamin
@@ -25,32 +26,49 @@ public class SocketThread extends Thread {
         }
     }
 
-    final HashMap<String, String> stringHashMap = new HashMap<String, String>();
 
     public void run() {
         setup();
         while (true) {
-            try {
-                synchronized (stringHashMap) {
-                    if (stringHashMap.size() >= 1000) {
-                    dos.write(0x01);
 
-                        dos.writeObject(stringHashMap);
-                        stringHashMap.clear();
+            HashMap<String, String> derp = null;
+            synchronized (toSend) {
+
+                if (toSend.size() >= 1000) {
+                    derp = (HashMap<String, String>) toSend.clone();
+                    toSend.clear();
+                }
+
+            }
+            if (derp != null) {
+                for (Map.Entry<String, String> entry : derp.entrySet()) {
+                    try {
+
+                        dos.write(0x01);
+                        dos.writeUTF(entry.getKey());
+                        dos.writeUTF(entry.getValue());
+                        dos.flush();
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
-            }
-             catch (IOException e) {
-                e.printStackTrace();
+                derp.clear();
             }
 
+            try {
+                sleep(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
+    final HashMap<String, String> toSend = new HashMap<String, String>();
 
     public void sendWorkResult(String seed, String hash) throws IOException {
-        synchronized (stringHashMap) {
-            stringHashMap.put(seed, hash);
+        synchronized (toSend) {
+            toSend.put(seed, hash);
         }
 
     }
