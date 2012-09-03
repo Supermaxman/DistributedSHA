@@ -22,7 +22,7 @@ public class mainWindow extends JFrame implements ActionListener {
     private final JTextField textSeed;
     private final JButton button;
     
-    private final JLabel info;
+    public static JLabel info;
     
     public mainWindow() {
         //Initialize
